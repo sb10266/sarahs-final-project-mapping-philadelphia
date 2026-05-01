@@ -84,7 +84,7 @@ map.on('load', () => {
         source: 'neighborhoods',
         paint: {
           'fill-color': ['get', 'color'],
-          'fill-opacity': 0.9
+          'fill-opacity': 0.7
         }
       });
 
@@ -95,6 +95,26 @@ map.on('load', () => {
         paint: {
           'line-color': '#000000',
           'line-width': 1
+        }
+      });
+
+      map.addLayer({
+        id: 'neighborhoods-label',
+        type: 'symbol',
+        source: 'neighborhoods',
+        layout: {
+          'text-field': ['get', 'LISTNAME'],
+          'text-font': ['Open Sans SemiBold', 'Arial Unicode MS Bold'],
+          'text-size': 10,
+          'text-anchor': 'center',
+          'text-allow-overlap': true,
+          'text-ignore-placement': true,
+          'symbol-placement': 'point'
+        },
+        paint: {
+          'text-color': '#000000',
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 1
         }
       });
 
@@ -122,7 +142,7 @@ map.on('load', () => {
             selectedRegion = null;
 
             map.setFilter('neighborhoods-fill', null);
-            map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.9);
+            map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
 
             document.getElementById('legend-list').innerHTML = '';
             return;
@@ -156,7 +176,7 @@ map.on('load', () => {
 
                 map.setFilter('neighborhoods-fill', null);
                 map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
-                map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.9);
+                map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
 
                 document.getElementById('legend-list').innerHTML = '';
                 return;
@@ -191,7 +211,7 @@ map.on('load', () => {
 
           map.setFilter('neighborhoods-fill', null);
           map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
-          map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.9);
+          map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
 
           document.getElementById('legend-list').innerHTML = '';
           return;
@@ -211,9 +231,17 @@ map.on('load', () => {
           0.2
         ]);
 
-        new mapboxgl.Popup()
+        const areaSqKm = (e.features[0].properties.Shape_Area / 1000000).toFixed(2);
+        const areaSqMiles = (e.features[0].properties.Shape_Area * 0.000000386102).toFixed(2);
+
+        new mapboxgl.Popup({ closeButton: true, closeOnClick: true })
           .setLngLat(e.lngLat)
-          .setHTML(`<strong>${name}</strong>`)
+          .setHTML(
+            `<strong>${name}</strong>` +
+            `<p>Region: ${region}</p>` +
+            `<p>Area: ${areaSqKm} km² (${areaSqMiles} mi²)</p>` +
+            `<p>Click another neighborhood or the map background to reset.</p>`
+          )
           .addTo(map);
       });
 
@@ -229,7 +257,7 @@ map.on('load', () => {
 
           map.setFilter('neighborhoods-fill', null);
           map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
-          map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.9);
+          map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
 
           document.getElementById('legend-list').innerHTML = '';
         }

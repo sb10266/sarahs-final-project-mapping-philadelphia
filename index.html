@@ -5,7 +5,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title> Mapping the City of Philadelphia </title>
+    <title>Mapping the City of Philadelphia</title>
     <link rel="stylesheet" href="./style.css">
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.20.0/mapbox-gl.js"></script>
@@ -13,18 +13,14 @@
 
 <body>
 <div id="page-header">
-    <h1>The City of Philadelphia</h1>
-    <p>Philadelphia is a <a
-            href="https://www.pew.org/en/research-and-analysis/articles/2025/03/10/philadelphia-a-city-of-neighborhoods"
-            target="_blank">City of Neighborhoods</a> -
-        <!-- I figured out how to do this from watching a tutorial on YouTube, while it's really helpful to have been able to do so much of this project going back and forth with ChatGPT and asking it to do things for me, it's also really nice to be able to figure things out on my own. In these projects I typically try to have a good mix of both -->
-        there are over 150! You can click any area on the map to see what neighborhood it is, or click the
-        regions in the legend to see a list of all the neighborhoods within it.
+    <h1>🦅The City of Philadelphia🦅</h1>
+    <p>Philadelphia is known as "The City of Neighborhoods." While other cities, including Chicago and New York, are also considered "cities of neighborhoods," <a href="https://philadelphiaencyclopedia.org/themes/city-of-neighborhoods/"> only Philadelphia</a> gets the distinctive "The." Neighborhood names are visible on the map, and clicking one shows a quick profile.
+        You can also click the regions in the legend to see a list of all the neighborhoods within it.
     </p>
 
 </div>
     <div id="map-container"> 
-        <div id="legend"> <!-- I didn't do this on my class three assignment, but it was recommended by ChatGPT and then my google search to place the legend inside the map div for the best functionality -->
+        <div id="legend"> <!-- When I was updating the colors I orignally forgot to update here. This is why the go live is so helpful so that I can see things I might have missed -->
             <h4>Regions</h4>
 
             <div id="legend-northwest" class="legend-item"><span style="background:#7fc97f"></span> Northwest</div>
