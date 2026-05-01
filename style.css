@@ -1,0 +1,106 @@
+body,
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#map-container {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    /* 👈 REQUIRED */
+}
+
+/* Above is the same code I used and wrote in my class three repository. I then used ChatGPT to help with some additional functionality */
+#legend {
+    position: absolute;
+    top: 50%;
+    /* move to vertical center */
+    left: 20px;
+    transform: translateY(-50%);
+    /* perfectly center it */
+    width: 220px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.95);
+    color: #222;
+    padding: 12px;
+    border-radius: 8px;
+    z-index: 999;
+}
+
+#legend h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
+.legend-scale {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.legend-scale span {
+    width: 18px;
+    height: 12px;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+#legend-label {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.legend-item span {
+    width: 14px;
+    height: 10px;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+#page-header {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    transform: none;
+    z-index: 3;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+    padding: 16px 18px;
+    max-width: 380px;
+    font-family: Arial, sans-serif;
+    color: #222;
+    text-align: center;
+}
+
+#page-header h1 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+#page-header p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #444;
+}
+
+#legend {
+    border: 1px solid #222;
+}
+
+#legend > .legend-item {
+    font-weight: 600;
+}
