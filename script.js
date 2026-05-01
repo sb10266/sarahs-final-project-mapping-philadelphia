@@ -2,13 +2,22 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoic2IxMDI2NiIsImEiOiJjbW9tNDI3bngwcGl1MnFwcXk5b
 
 // Same Initial Javascript as my class four project
 
+// Used AI to help adjust the zoom features so that you can't zoom out too far since it's just a map of Philly
+
 const map = new mapboxgl.Map({
   container: 'map-container',
   style: 'mapbox://styles/mapbox/light-v11',
   projection: 'mercator',
   zoom: 10.64,
-  center: [-75.16071, 39.98169]
+  center: [-75.16071, 39.98169],
+  minZoom: 9.1,
+  maxZoom: 15,
+  maxBounds: [
+    [-75.45, 39.65],
+    [-74.75, 40.35]
+  ]
 });
+
 
 map.addControl(new mapboxgl.NavigationControl());
 
