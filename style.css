@@ -104,3 +104,34 @@ html {
 #legend > .legend-item {
     font-weight: 600;
 }
+
+#neighborhood-list {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    width: 220px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.95);
+    color: #222;
+    padding: 12px;
+    border-radius: 8px;
+    z-index: 999;
+    border: 1px solid #222;
+    display: none;
+}
+
+#neighborhood-list.active {
+    display: block;
+}
+
+#neighborhood-list .legend-item {
+    cursor: pointer;
+}
+
+#neighborhood-list .legend-item:hover {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    padding-left: 6px;
+}

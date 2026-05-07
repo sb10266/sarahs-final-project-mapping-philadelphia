@@ -13,8 +13,8 @@ const map = new mapboxgl.Map({
   minZoom: 9.1,
   maxZoom: 15,
   maxBounds: [
-    [-75.45, 39.65],
-    [-74.75, 40.35]
+    [-75.50, 39.60],
+    [-74.70, 40.45]
   ]
 });
 
@@ -25,10 +25,14 @@ let selectedNeighborhood = null;
 let selectedRegion = null;
 
 map.on('load', () => {
+  let neighborhoodsInfo = {};
 
-  fetch('philadelphia-neighborhoods.geojson')
-    .then(res => res.json())
-    .then(data => {
+  Promise.all([
+    fetch('philadelphia-neighborhoods.geojson').then(res => res.json()),
+    fetch('neighborhoods-info.json').then(res => res.json())
+  ])
+    .then(([data, infoData]) => {
+      neighborhoodsInfo = infoData.neighborhoods;
 
       const regionColors = {
         northwest: '#7fc97f',
@@ -138,6 +142,15 @@ map.on('load', () => {
         filter: ['==', 'LISTNAME', '']
       });
 
+      // Fit the entire Philadelphia area in the viewport
+      map.fitBounds(
+        [
+          [-75.28026418506731, 39.8670057574966],
+          [-74.95576188422399, 40.137992794380835]
+        ],
+        { padding: 40 }
+      );
+
       // 🟡 LEGEND INTERACTIVITY
       Object.keys(regionColors).forEach(region => {
         const el = document.getElementById(`legend-${region}`);
@@ -153,7 +166,9 @@ map.on('load', () => {
             map.setFilter('neighborhoods-fill', null);
             map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
 
-            document.getElementById('legend-list').innerHTML = '';
+            const listEl = document.getElementById('neighborhood-list');
+            listEl.innerHTML = '';
+            listEl.classList.remove('active');
             return;
           }
 
@@ -162,8 +177,9 @@ map.on('load', () => {
 
           map.setFilter('neighborhoods-fill', ['==', ['get', 'region'], region]);
 
-          const listContainer = document.getElementById('legend-list');
+          const listContainer = document.getElementById('neighborhood-list');
           listContainer.innerHTML = '';
+          listContainer.classList.add('active');
 
           const neighborhoods = data.features
             .filter(f => f.properties.region === region)
@@ -187,7 +203,9 @@ map.on('load', () => {
                 map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
                 map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
 
-                document.getElementById('legend-list').innerHTML = '';
+                const listEl = document.getElementById('neighborhood-list');
+                listEl.innerHTML = '';
+                listEl.classList.remove('active');
                 return;
               }
 
@@ -222,7 +240,9 @@ map.on('load', () => {
           map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
           map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
 
-          document.getElementById('legend-list').innerHTML = '';
+          const listEl = document.getElementById('neighborhood-list');
+          listEl.innerHTML = '';
+          listEl.classList.remove('active');
           return;
         }
 
@@ -242,14 +262,14 @@ map.on('load', () => {
 
         const areaSqKm = (e.features[0].properties.Shape_Area / 1000000).toFixed(2);
         const areaSqMiles = (e.features[0].properties.Shape_Area * 0.000000386102).toFixed(2);
+        const description = neighborhoodsInfo[name] || 'No description available for this neighborhood.';
 
         new mapboxgl.Popup({ closeButton: true, closeOnClick: true })
           .setLngLat(e.lngLat)
           .setHTML(
             `<strong>${name}</strong>` +
-            `<p>Region: ${region}</p>` +
-            `<p>Area: ${areaSqKm} km² (${areaSqMiles} mi²)</p>` +
-            `<p>Click another neighborhood or the map background to reset.</p>`
+            `<p><em>${region}</em> Region | Area: ${areaSqKm} km² (${areaSqMiles} mi²)</p>` +
+            `<p>${description}</p>`
           )
           .addTo(map);
       });
@@ -268,7 +288,9 @@ map.on('load', () => {
           map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
           map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
 
-          document.getElementById('legend-list').innerHTML = '';
+          const listEl = document.getElementById('neighborhood-list');
+          listEl.innerHTML = '';
+          listEl.classList.remove('active');
         }
       });
 
