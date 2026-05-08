@@ -262,6 +262,8 @@ map.on('load', () => {
 
 // I found a Wikipedia article that had information for some of the neighborhoods, so I asked AI to help me create a way for that to be added to the pop-up, along with the neighborhood region and area. It also created a separate neighborhoods info json to use for this purpose
 
+// I had to test what the AI was doing several times -- first it only gave me a few descriptions, then it wanted to create a python file. I ended up using the json it created but adding my own descriptions in. I used ChatGPT separately to help come up with the descriptions. 
+
         const areaSqKm = (e.features[0].properties.Shape_Area / 1000000).toFixed(2);
         const areaSqMiles = (e.features[0].properties.Shape_Area * 0.000000386102).toFixed(2);
         const description = neighborhoodsInfo[name] || 'No description available for this neighborhood.';
