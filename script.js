@@ -260,6 +260,8 @@ map.on('load', () => {
           0.2
         ]);
 
+// I found a Wikipedia article that had information for some of the neighborhoods, so I asked AI to help me create a way for that to be added to the pop-up, along with the neighborhood region and area. It also created a separate neighborhoods info json to use for this purpose
+
         const areaSqKm = (e.features[0].properties.Shape_Area / 1000000).toFixed(2);
         const areaSqMiles = (e.features[0].properties.Shape_Area * 0.000000386102).toFixed(2);
         const description = neighborhoodsInfo[name] || 'No description available for this neighborhood.';
