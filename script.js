@@ -166,20 +166,25 @@ map.on('load', () => {
           closingPopupManually = false;
         });
 
-        if (activePopup) {
-          activePopup.remove();
-        }
+        removeActivePopupSafely();
 
         activePopup = popup;
+      }
+
+      function removeActivePopupSafely() {
+        if (activePopup) {
+          closingPopupManually = true;
+          activePopup.remove();
+          activePopup = null;
+        }
       }
 
       function resetMap(fromPopupClose = false) {
         selectedNeighborhood = null;
         selectedRegion = null;
 
-        if (!fromPopupClose && activePopup) {
-          activePopup.remove();
-          activePopup = null;
+        if (!fromPopupClose) {
+          removeActivePopupSafely();
         }
 
         map.setFilter('neighborhoods-fill', null);
@@ -315,10 +320,7 @@ map.on('load', () => {
             return;
           }
 
-          if (activePopup) {
-            activePopup.remove();
-            activePopup = null;
-          }
+          removeActivePopupSafely();
 
           selectedRegion = region;
           selectedNeighborhood = null;
@@ -373,10 +375,7 @@ map.on('load', () => {
                 const [lng, lat] = getCentroid(feature.geometry);
                 map.flyTo({ center: [lng, lat], zoom: 13, speed: 1.2 });
 
-                if (activePopup) {
-                  activePopup.remove();
-                  activePopup = null;
-                }
+                removeActivePopupSafely();
 
                 showNeighborhoodPopup(feature, [lng, lat]);
               }
@@ -401,11 +400,7 @@ map.on('load', () => {
       // This gave me soooooooo much trouble, both asking AI for help and trying to figure it out myself. But I finally got it working!
       map.on('click', (e) => {
         // Close any active popup first
-        if (activePopup) {
-          closingPopupManually = true;
-          activePopup.remove();
-          activePopup = null;
-        }
+        removeActivePopupSafely();
 
         const features = map.queryRenderedFeatures(e.point, {
           layers: ['neighborhoods-fill']
