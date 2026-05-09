@@ -18,7 +18,7 @@
         "Carroll Park": "Carroll Park is a West Philadelphia neighborhood built around the large public park of the same name. The area has historically been home to working-class Black families and features rows of classic Philadelphia homes.",
         "Cedar Park": "Cedar Park is one of West Philadelphia’s most recognizable neighborhoods, known for its Victorian homes, progressive community culture, and leafy streets. Baltimore Avenue anchors the area with cafes, bookstores, and trolley lines that give it a distinctly local feel.",
         "Cedarbrook": "Cedarbrook sits along Philadelphia’s northwestern edge near Montgomery County. The neighborhood is mostly residential and known for detached homes, shopping centers, and a quieter suburban atmosphere.",
-        "Center City": "Center City is the heart of Philadelphia and the second-most densely populated downtown in the United States outside Manhattan. It contains iconic landmarks like City Hall, Reading Terminal Market, and Rittenhouse Square, while serving as the city’s business and cultural core.",
+        "Center City East": "Center City is the heart of Philadelphia and the second-most densely populated downtown in the United States outside Manhattan. It contains iconic landmarks like City Hall, Reading Terminal Market, and Rittenhouse Square, while serving as the city’s business and cultural core.",
         "Chestnut Hill": "Chestnut Hill is often called Philadelphia’s 'Garden District' because of its tree-lined streets, stone homes, and lush greenery. Germantown Avenue serves as the neighborhood’s charming main street, filled with boutiques, cafes, and historic architecture.",
         "Chinatown": "Philadelphia’s Chinatown has served as a cultural and commercial center for Asian American communities since the 19th century. The neighborhood is famous for its dense collection of restaurants, markets, festivals, and the Friendship Gate on Arch Street.",
         "Clearview": "Clearview is a small residential neighborhood in the lower Northeast characterized by rowhomes and industrial edges. Its location near I-95 and Tacony Creek has long connected it to Philadelphia’s manufacturing history.",
@@ -161,12 +161,12 @@
         "Yorktown": "Yorktown is a North Philadelphia neighborhood developed largely during the mid-20th century to provide housing for Black middle-class families. The area is characterized by rows of brick homes and strong neighborhood identity."
     },
     "regionDescriptions": {
-        "northwest": "Add a short description for the Northwest region here.",
-        "north": "Add a short description for the North region here.",
-        "northeast": "Add a short description for the Northeast region here.",
-        "west": "Add a short description for the West region here.",
-        "central": "Add a short description for the Central region here.",
-        "east": "Add a short description for the East region here.",
-        "south": "Add a short description for the South region here."
+        "northwest": "Northwest Philadelphia blends historic neighborhoods like Germantown and Mount Airy with access to Wissahickon Valley Park. The area is known for its diversity, progressive activism, and mix of urban and suburban character.",
+        "north": "North Philadelphia is characterized by its diverse communities and rich history. The area features a mix of residential, commercial, and industrial spaces.",
+        "northeast": "Northeast Philadelphia is known for its vibrant neighborhoods and strong sense of community. The area has a rich cultural heritage and is home to many historic buildings. The neighborhood is undergoing significant redevelopment in rapidly gentrifying areas like Fishtown.",
+        "west": "West Philadelphia is a diverse area with a mix of residential and commercial spaces. The neighborhood is known for its cultural institutions and historic architecture. In popular culture, West Philadelphia is famously referenced in the theme song of 'The Fresh Prince of Bel-Air,' which begins with the line 'In West Philadelphia born and raised.'",
+        "central": "Central Philadelphia is the heart of the city and contains many iconic landmarks. The area is known for its bustling streets and vibrant atmosphere. Key landmarks include the Liberty Bell, Independence Hall, and the Philadelphia Museum of Art.",
+        "east": "East Philadelphia is a diverse neighborhood with a rich history. The area features a mix of residential, commercial, and industrial spaces.",
+        "south": "South Philadelphia is known for its vibrant neighborhoods and strong sense of community. The area has a rich cultural heritage and is home to many historic buildings, along with the Philadelphia Zoo and the stadium."
     }
 }

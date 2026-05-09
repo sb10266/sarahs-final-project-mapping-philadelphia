@@ -49,6 +49,7 @@ map.on('load', () => {
 
 // I used the resource you shared with me from my class 4 assignment to pick distinct colors for each region. After I picked these colors I made the shift from dark mode to light mode, you'll see that comment elsewhere as well.
 
+// I also added in summaries for the regions, which was pulled through a mix of me googling and putting in info and the AI automatically finishing the sentences for me. I wanted to add in the region descriptions to give users a better sense of the overall character of each region, and to make it more likely that they would want to click on the individual neighborhoods within each region to learn more about them.
       const regionDescriptions = infoData.regionDescriptions || {};
 
       const center = [-75.1652, 39.9526];
@@ -194,6 +195,17 @@ map.on('load', () => {
           region = 'west';
         } else {
           region = 'central';
+        }
+
+        const northwestForcedNames = new Set([
+          'Cedarbrook',
+          'Mount Airy, East',
+          'West Oak Lane',
+          'Wister'
+        ]);
+
+        if (feature.properties.LISTNAME.includes('Germantown') || northwestForcedNames.has(feature.properties.LISTNAME)) {
+          region = 'northwest';
         }
 
         feature.properties.region = region;
