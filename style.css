@@ -136,6 +136,8 @@ html {
     padding-left: 6px;
 }
 
+/* Even though there are reset options by clicking the neighborhood or region again, I wanted to add a reset button to make it easier for the user */
+
 #map-reset-button {
     position: absolute;
     top: 70%;

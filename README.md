@@ -6,10 +6,10 @@ This project was created as an assignment for the course Advanced GIS: Interacti
 
 ## Features
 
-- Interactive Map: Built with Mapbox GL JS displaying a code projection centered on Philadelphia, OpenData Philly date displays the neighborhoods of the city
+- Interactive Map: Built with Mapbox GL JS displaying a code projection centered on Philadelphia, OpenData Philly date displays the regions and neighborhoods of the city
 - Color-Coded Regions: A clickable legend uses different colors for different regions (Northeast, North, Northwest, South, East, West, Central)
-- Interactive Popups: If you click any neighborhood bounds within the map, the name of the neighborhood will pop up, along with its region, area, and a short description.
-- Floating Legend: Left-hand legend shows the regions and their corresponding color. Additionally, if you click on a region, a pop-up appears on the right side of the screen that shows all of the neighborhoods within it
+- Interactive Popups: If you click any neighborhood bounds within the map, the name of the neighborhood will pop up, along with its region, area, and a short description. Additionally, if you click the neighborhood from the region list, the same pop-up will show up 
+- Floating Legend: Left-hand legend shows the regions and their corresponding color. Additionally, if you click on a region, a pop-up appears on the right side of the screen that shows all of the neighborhoods within it and a brief description of that region
 - Header: A header includes the project's description and call-to-action, plus links to an interesting article about why Philadelphia is known as the City of Neighborhoods
 
 ## Files

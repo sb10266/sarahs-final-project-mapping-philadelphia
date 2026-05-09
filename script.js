@@ -1,6 +1,6 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2IxMDI2NiIsImEiOiJjbW9tNDI3bngwcGl1MnFwcXk5b2t0ZXNxIn0.wAwvLXMujAK956EnrX5k1A';
 
-// Same Initial Javascript as my class four project
+// Same initial Javascript as my class four project
 
 // Used AI to help adjust the zoom features so that you can't zoom out too far since it's just a map of Philly
 
@@ -18,6 +18,7 @@ const map = new mapboxgl.Map({
   ]
 });
 
+// I actually ended up changing one key thing from my class 4 project to this, which is I shifted from dark mode to light mode. I felt like light mode would make it easier to read and the colors that I picked looked better against it
 
 map.addControl(new mapboxgl.NavigationControl());
 
@@ -45,6 +46,8 @@ map.on('load', () => {
         west: '#f0027f',
         central: '#bf5b17'
       };
+
+// I used the resource you shared with me from my class 4 assignment to pick distinct colors for each region. After I picked these colors I made the shift from dark mode to light mode, you'll see that comment elsewhere as well.
 
       const regionDescriptions = infoData.regionDescriptions || {};
 
@@ -261,7 +264,7 @@ map.on('load', () => {
       // Fit the entire Philadelphia area in the viewport
       map.fitBounds(initialBounds, { padding: 40 });
 
-      // 🟡 LEGEND INTERACTIVITY
+      // LEGEND INTERACTIVITY
       Object.keys(regionColors).forEach(region => {
         const el = document.getElementById(`legend-${region}`);
         if (!el) return;
@@ -358,6 +361,7 @@ map.on('load', () => {
       });
 
       // ✅ Map click handler (neighborhoods and background)
+      // This gave me soooooooo much trouble, both asking AI for help and trying to figure it out myself. But I finally got it working!
       map.on('click', (e) => {
         // Close any active popup first
         if (activePopup) {
