@@ -137,6 +137,70 @@ map.on('load', () => {
         return [[bounds[0], bounds[1]], [bounds[2], bounds[3]]];
       }
 
+      function renderRegionNeighborhoodList(region) {
+        selectedRegion = region;
+        const listContainer = document.getElementById('neighborhood-list');
+        if (!listContainer) return;
+
+        listContainer.innerHTML = '';
+        listContainer.classList.add('active');
+
+        const descriptionText = regionDescriptions[region] || 'No description available yet for this region.';
+        const regionHeader = document.createElement('div');
+        regionHeader.className = 'region-popup-header';
+        regionHeader.innerHTML = `<h3>${region.charAt(0).toUpperCase() + region.slice(1)} Region</h3>`;
+        const descriptionEl = document.createElement('p');
+        descriptionEl.className = 'region-description';
+        descriptionEl.innerText = descriptionText;
+
+        listContainer.appendChild(regionHeader);
+        listContainer.appendChild(descriptionEl);
+
+        const neighborhoods = data.features
+          .filter(f => f.properties.region === region)
+          .map(f => f.properties.LISTNAME)
+          .sort();
+
+        neighborhoods.forEach(name => {
+          const item = document.createElement('div');
+          item.className = 'legend-item';
+          item.innerText = name;
+
+          item.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            // Toggle OFF neighborhood
+            if (selectedNeighborhood === name && selectedRegion === region) {
+              resetMap();
+              return;
+            }
+
+            selectedNeighborhood = name;
+            selectedRegion = region;
+
+            const feature = data.features.find(f => f.properties.LISTNAME === name);
+            if (feature) {
+              const [lng, lat] = getCentroid(feature.geometry);
+              map.flyTo({ center: [lng, lat], zoom: 13, speed: 1.2 });
+
+              removeActivePopupSafely();
+              showNeighborhoodPopup(feature, [lng, lat]);
+            }
+
+            map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', name]);
+
+            map.setPaintProperty('neighborhoods-fill', 'fill-opacity', [
+              'case',
+              ['==', ['get', 'LISTNAME'], name],
+              1,
+              0.2
+            ]);
+          });
+
+          listContainer.appendChild(item);
+        });
+      }
+
       function showNeighborhoodPopup(feature, lngLat) {
         const name = feature.properties.LISTNAME;
         const region = feature.properties.region;
@@ -333,65 +397,7 @@ map.on('load', () => {
             map.fitBounds(regionBounds, { padding: 80, duration: 1200 });
           }
 
-          const listContainer = document.getElementById('neighborhood-list');
-          listContainer.innerHTML = '';
-          listContainer.classList.add('active');
-
-          const descriptionText = regionDescriptions[region] || 'No description available yet for this region.';
-          const regionHeader = document.createElement('div');
-          regionHeader.className = 'region-popup-header';
-          regionHeader.innerHTML = `<h3>${region.charAt(0).toUpperCase() + region.slice(1)} Region</h3>`;
-          const descriptionEl = document.createElement('p');
-          descriptionEl.className = 'region-description';
-          descriptionEl.innerText = descriptionText;
-
-          listContainer.appendChild(regionHeader);
-          listContainer.appendChild(descriptionEl);
-
-          const neighborhoods = data.features
-            .filter(f => f.properties.region === region)
-            .map(f => f.properties.LISTNAME)
-            .sort();
-
-          neighborhoods.forEach(name => {
-            const item = document.createElement('div');
-            item.className = 'legend-item';
-            item.innerText = name;
-
-            item.addEventListener('click', (e) => {
-              e.stopPropagation();
-
-              // Toggle OFF neighborhood
-              if (selectedNeighborhood === name) {
-                resetMap();
-                return;
-              }
-
-              selectedNeighborhood = name;
-              selectedRegion = null;
-
-              const feature = data.features.find(f => f.properties.LISTNAME === name);
-              if (feature) {
-                const [lng, lat] = getCentroid(feature.geometry);
-                map.flyTo({ center: [lng, lat], zoom: 13, speed: 1.2 });
-
-                removeActivePopupSafely();
-
-                showNeighborhoodPopup(feature, [lng, lat]);
-              }
-
-              map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', name]);
-
-              map.setPaintProperty('neighborhoods-fill', 'fill-opacity', [
-                'case',
-                ['==', ['get', 'LISTNAME'], name],
-                1,
-                0.2
-              ]);
-            });
-
-            listContainer.appendChild(item);
-          });
+          renderRegionNeighborhoodList(region);
 
         });
       });
@@ -418,7 +424,7 @@ map.on('load', () => {
           }
 
           selectedNeighborhood = name;
-          selectedRegion = null;
+          selectedRegion = region;
 
           const [lng, lat] = getCentroid(feature.geometry);
           map.flyTo({ center: [lng, lat], zoom: 13, speed: 1.2 });
@@ -433,6 +439,7 @@ map.on('load', () => {
             0.2
           ]);
 
+          renderRegionNeighborhoodList(region);
           showNeighborhoodPopup(feature, e.lngLat);
         } else {
           // Background click reset
