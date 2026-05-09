@@ -4,6 +4,31 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoic2IxMDI2NiIsImEiOiJjbW9tNDI3bngwcGl1MnFwcXk5b
 
 // Used AI to help adjust the zoom features so that you can't zoom out too far since it's just a map of Philly
 
+// Welcome modal handler
+function closeWelcomeModal() {
+  const modal = document.getElementById('welcome-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('welcome-modal');
+  const closeBtn = document.querySelector('.modal-close');
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeWelcomeModal);
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeWelcomeModal();
+      }
+    });
+  }
+});
+
 const map = new mapboxgl.Map({
   container: 'map-container',
   style: 'mapbox://styles/mapbox/light-v11',
