@@ -23,6 +23,8 @@ map.addControl(new mapboxgl.NavigationControl());
 
 let selectedNeighborhood = null;
 let selectedRegion = null;
+let activePopup = null;
+let closingPopupManually = false;
 
 map.on('load', () => {
   let neighborhoodsInfo = {};
@@ -44,24 +46,133 @@ map.on('load', () => {
         central: '#bf5b17'
       };
 
+      const regionDescriptions = infoData.regionDescriptions || {};
+
       const center = [-75.1652, 39.9526];
 
-      function getCentroid(coords) {
+      function getCentroid(geometry) {
         let x = 0, y = 0, count = 0;
-        coords.forEach(polygon => {
-          polygon.forEach(ring => {
-            ring.forEach(coord => {
-              x += coord[0];
-              y += coord[1];
-              count++;
+
+        const addCoord = (coord) => {
+          if (!Array.isArray(coord) || coord.length < 2) return;
+          x += coord[0];
+          y += coord[1];
+          count += 1;
+        };
+
+        if (geometry.type === 'Polygon') {
+          geometry.coordinates.forEach(ring => {
+            ring.forEach(addCoord);
+          });
+        } else if (geometry.type === 'MultiPolygon') {
+          geometry.coordinates.forEach(polygon => {
+            polygon.forEach(ring => {
+              ring.forEach(addCoord);
             });
           });
+        }
+
+        return count ? [x / count, y / count] : [0, 0];
+      }
+
+      function getFeatureBounds(feature) {
+        const bounds = [Infinity, Infinity, -Infinity, -Infinity];
+        const extend = (coord) => {
+          bounds[0] = Math.min(bounds[0], coord[0]);
+          bounds[1] = Math.min(bounds[1], coord[1]);
+          bounds[2] = Math.max(bounds[2], coord[0]);
+          bounds[3] = Math.max(bounds[3], coord[1]);
+        };
+
+        if (feature.geometry.type === 'Polygon') {
+          feature.geometry.coordinates.forEach(ring => ring.forEach(extend));
+        } else if (feature.geometry.type === 'MultiPolygon') {
+          feature.geometry.coordinates.forEach(polygon => polygon.forEach(ring => ring.forEach(extend)));
+        }
+
+        return bounds;
+      }
+
+      function getBoundsFromFeatures(features) {
+        if (!features.length) return null;
+
+        const bounds = [Infinity, Infinity, -Infinity, -Infinity];
+        features.forEach(feature => {
+          const featureBounds = getFeatureBounds(feature);
+          bounds[0] = Math.min(bounds[0], featureBounds[0]);
+          bounds[1] = Math.min(bounds[1], featureBounds[1]);
+          bounds[2] = Math.max(bounds[2], featureBounds[2]);
+          bounds[3] = Math.max(bounds[3], featureBounds[3]);
         });
-        return [x / count, y / count];
+
+        return [[bounds[0], bounds[1]], [bounds[2], bounds[3]]];
+      }
+
+      function showNeighborhoodPopup(feature, lngLat) {
+        const name = feature.properties.LISTNAME;
+        const region = feature.properties.region;
+
+        const areaSqKm = (feature.properties.Shape_Area / 1000000).toFixed(2);
+        const areaSqMiles = (feature.properties.Shape_Area * 0.000000386102).toFixed(2);
+        const description = neighborhoodsInfo[name] || 'No description available for this neighborhood.';
+
+        const popup = new mapboxgl.Popup({
+          closeButton: true,
+          closeOnClick: false,
+          offset: [0, -20]
+        })
+          .setLngLat(lngLat)
+          .setHTML(
+            `<strong>${name}</strong>` +
+            `<p><em>${region}</em> Region | Area: ${areaSqKm} km² (${areaSqMiles} mi²)</p>` +
+            `<p>${description}</p>`
+          )
+          .addTo(map);
+
+        popup.on('close', () => {
+          activePopup = null;
+          if (!closingPopupManually) {
+            resetMap(true);
+          }
+          closingPopupManually = false;
+        });
+
+        if (activePopup) {
+          activePopup.remove();
+        }
+
+        activePopup = popup;
+      }
+
+      function resetMap(fromPopupClose = false) {
+        selectedNeighborhood = null;
+        selectedRegion = null;
+
+        if (!fromPopupClose && activePopup) {
+          activePopup.remove();
+          activePopup = null;
+        }
+
+        map.setFilter('neighborhoods-fill', null);
+        map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
+
+        map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
+
+        const initialBounds = [
+          [-75.28026418506731, 39.8670057574966],
+          [-74.95576188422399, 40.137992794380835]
+        ];
+        map.fitBounds(initialBounds, { padding: 40, duration: 1200 });
+
+        const listContainer = document.getElementById('neighborhood-list');
+        if (listContainer) {
+          listContainer.innerHTML = '';
+          listContainer.classList.remove('active');
+        }
       }
 
       data.features.forEach(feature => {
-        const [lng, lat] = getCentroid(feature.geometry.coordinates);
+        const [lng, lat] = getCentroid(feature.geometry);
 
         const latDiff = lat - center[1];
         const lngDiff = lng - center[0];
@@ -118,7 +229,7 @@ map.on('load', () => {
         layout: {
           'text-field': ['get', 'LISTNAME'],
           'text-font': ['Open Sans SemiBold', 'Arial Unicode MS Bold'],
-          'text-size': 10,
+          'text-size': 12,
           'text-anchor': 'center',
           'text-allow-overlap': true,
           'text-ignore-placement': true,
@@ -142,14 +253,13 @@ map.on('load', () => {
         filter: ['==', 'LISTNAME', '']
       });
 
+      const initialBounds = [
+        [-75.28026418506731, 39.8670057574966],
+        [-74.95576188422399, 40.137992794380835]
+      ];
+
       // Fit the entire Philadelphia area in the viewport
-      map.fitBounds(
-        [
-          [-75.28026418506731, 39.8670057574966],
-          [-74.95576188422399, 40.137992794380835]
-        ],
-        { padding: 40 }
-      );
+      map.fitBounds(initialBounds, { padding: 40 });
 
       // 🟡 LEGEND INTERACTIVITY
       Object.keys(regionColors).forEach(region => {
@@ -161,15 +271,13 @@ map.on('load', () => {
 
           // Toggle OFF
           if (selectedRegion === region) {
-            selectedRegion = null;
-
-            map.setFilter('neighborhoods-fill', null);
-            map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
-
-            const listEl = document.getElementById('neighborhood-list');
-            listEl.innerHTML = '';
-            listEl.classList.remove('active');
+            resetMap();
             return;
+          }
+
+          if (activePopup) {
+            activePopup.remove();
+            activePopup = null;
           }
 
           selectedRegion = region;
@@ -177,9 +285,26 @@ map.on('load', () => {
 
           map.setFilter('neighborhoods-fill', ['==', ['get', 'region'], region]);
 
+          const regionFeatures = data.features.filter(f => f.properties.region === region);
+          const regionBounds = getBoundsFromFeatures(regionFeatures);
+          if (regionBounds) {
+            map.fitBounds(regionBounds, { padding: 80, duration: 1200 });
+          }
+
           const listContainer = document.getElementById('neighborhood-list');
           listContainer.innerHTML = '';
           listContainer.classList.add('active');
+
+          const descriptionText = regionDescriptions[region] || 'No description available yet for this region.';
+          const regionHeader = document.createElement('div');
+          regionHeader.className = 'region-popup-header';
+          regionHeader.innerHTML = `<h3>${region.charAt(0).toUpperCase() + region.slice(1)} Region</h3>`;
+          const descriptionEl = document.createElement('p');
+          descriptionEl.className = 'region-description';
+          descriptionEl.innerText = descriptionText;
+
+          listContainer.appendChild(regionHeader);
+          listContainer.appendChild(descriptionEl);
 
           const neighborhoods = data.features
             .filter(f => f.properties.region === region)
@@ -196,20 +321,25 @@ map.on('load', () => {
 
               // Toggle OFF neighborhood
               if (selectedNeighborhood === name) {
-                selectedNeighborhood = null;
-                selectedRegion = null;
-
-                map.setFilter('neighborhoods-fill', null);
-                map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
-                map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
-
-                const listEl = document.getElementById('neighborhood-list');
-                listEl.innerHTML = '';
-                listEl.classList.remove('active');
+                resetMap();
                 return;
               }
 
               selectedNeighborhood = name;
+              selectedRegion = null;
+
+              const feature = data.features.find(f => f.properties.LISTNAME === name);
+              if (feature) {
+                const [lng, lat] = getCentroid(feature.geometry);
+                map.flyTo({ center: [lng, lat], zoom: 13, speed: 1.2 });
+
+                if (activePopup) {
+                  activePopup.remove();
+                  activePopup = null;
+                }
+
+                showNeighborhoodPopup(feature, [lng, lat]);
+              }
 
               map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', name]);
 
@@ -227,76 +357,60 @@ map.on('load', () => {
         });
       });
 
-      // ✅ Map neighborhood click
-      map.on('click', 'neighborhoods-fill', (e) => {
-        const name = e.features[0].properties.LISTNAME;
-        const region = e.features[0].properties.region;
-
-        if (selectedNeighborhood === name) {
-          selectedNeighborhood = null;
-          selectedRegion = null;
-
-          map.setFilter('neighborhoods-fill', null);
-          map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
-          map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
-
-          const listEl = document.getElementById('neighborhood-list');
-          listEl.innerHTML = '';
-          listEl.classList.remove('active');
-          return;
+      // ✅ Map click handler (neighborhoods and background)
+      map.on('click', (e) => {
+        // Close any active popup first
+        if (activePopup) {
+          closingPopupManually = true;
+          activePopup.remove();
+          activePopup = null;
         }
 
-        selectedNeighborhood = name;
-        selectedRegion = null;
-
-        map.setFilter('neighborhoods-fill', null);
-
-        map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', name]);
-
-        map.setPaintProperty('neighborhoods-fill', 'fill-opacity', [
-          'case',
-          ['==', ['get', 'LISTNAME'], name],
-          1,
-          0.2
-        ]);
-
-// I found a Wikipedia article that had information for some of the neighborhoods, so I asked AI to help me create a way for that to be added to the pop-up, along with the neighborhood region and area. It also created a separate neighborhoods info json to use for this purpose
-
-// I had to test what the AI was doing several times -- first it only gave me a few descriptions, then it wanted to create a python file. I ended up using the json it created but adding my own descriptions in. I used ChatGPT separately to help come up with the descriptions. 
-
-        const areaSqKm = (e.features[0].properties.Shape_Area / 1000000).toFixed(2);
-        const areaSqMiles = (e.features[0].properties.Shape_Area * 0.000000386102).toFixed(2);
-        const description = neighborhoodsInfo[name] || 'No description available for this neighborhood.';
-
-        new mapboxgl.Popup({ closeButton: true, closeOnClick: true })
-          .setLngLat(e.lngLat)
-          .setHTML(
-            `<strong>${name}</strong>` +
-            `<p><em>${region}</em> Region | Area: ${areaSqKm} km² (${areaSqMiles} mi²)</p>` +
-            `<p>${description}</p>`
-          )
-          .addTo(map);
-      });
-
-      // ✅ Background click reset (FIXED)
-      map.on('click', (e) => {
         const features = map.queryRenderedFeatures(e.point, {
           layers: ['neighborhoods-fill']
         });
 
-        if (!features.length) {
-          selectedNeighborhood = null;
+        if (features.length) {
+          // Neighborhood click
+          const feature = features[0];
+          const name = feature.properties.LISTNAME;
+          const region = feature.properties.region;
+
+          if (selectedNeighborhood === name) {
+            resetMap();
+            return;
+          }
+
+          selectedNeighborhood = name;
           selectedRegion = null;
 
-          map.setFilter('neighborhoods-fill', null);
-          map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', '']);
-          map.setPaintProperty('neighborhoods-fill', 'fill-opacity', 0.7);
+          const [lng, lat] = getCentroid(feature.geometry);
+          map.flyTo({ center: [lng, lat], zoom: 13, speed: 1.2 });
 
-          const listEl = document.getElementById('neighborhood-list');
-          listEl.innerHTML = '';
-          listEl.classList.remove('active');
+          map.setFilter('neighborhoods-fill', null);
+          map.setFilter('neighborhoods-highlight', ['==', 'LISTNAME', name]);
+
+          map.setPaintProperty('neighborhoods-fill', 'fill-opacity', [
+            'case',
+            ['==', ['get', 'LISTNAME'], name],
+            1,
+            0.2
+          ]);
+
+          showNeighborhoodPopup(feature, e.lngLat);
+        } else {
+          // Background click reset
+          resetMap();
         }
       });
+
+      const resetButton = document.getElementById('map-reset-button');
+      if (resetButton) {
+        resetButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          resetMap();
+        });
+      }
 
       map.on('mouseenter', 'neighborhoods-fill', () => {
         map.getCanvas().style.cursor = 'pointer';

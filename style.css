@@ -15,7 +15,7 @@ html {
 /* Above is the same code I used and wrote in my class three repository. I then used ChatGPT to help with some additional functionality */
 #legend {
     position: absolute;
-    top: 50%;
+    top: 55%;
     /* move to vertical center */
     left: 20px;
     transform: translateY(-50%);
@@ -134,4 +134,39 @@ html {
     background-color: #f0f0f0;
     border-radius: 4px;
     padding-left: 6px;
+}
+
+#map-reset-button {
+    position: absolute;
+    top: 70%;
+    left: 20px;
+    z-index: 1000;
+    background: #fff;
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+#map-reset-button:hover {
+    background: #f7f7f7;
+}
+
+#neighborhood-list .region-popup-header {
+    margin-bottom: 6px;
+}
+
+#neighborhood-list .region-popup-header h3 {
+    margin: 0 0 6px;
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+#neighborhood-list .region-description {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
 }

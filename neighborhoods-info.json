@@ -159,5 +159,14 @@
         "Wynnefield": "Wynnefield is known for its large homes, apartment buildings, and proximity to Fairmount Park and City Avenue. The neighborhood has long been associated with middle-class Black families and notable Philadelphia cultural figures.",
         "Wynnefield Heights": "Wynnefield Heights sits near City Avenue and combines high-rise apartments, townhouses, and commercial development. The neighborhood’s location provides quick access to both Center City and the nearby suburbs.",
         "Yorktown": "Yorktown is a North Philadelphia neighborhood developed largely during the mid-20th century to provide housing for Black middle-class families. The area is characterized by rows of brick homes and strong neighborhood identity."
+    },
+    "regionDescriptions": {
+        "northwest": "Add a short description for the Northwest region here.",
+        "north": "Add a short description for the North region here.",
+        "northeast": "Add a short description for the Northeast region here.",
+        "west": "Add a short description for the West region here.",
+        "central": "Add a short description for the Central region here.",
+        "east": "Add a short description for the East region here.",
+        "south": "Add a short description for the South region here."
     }
 }
