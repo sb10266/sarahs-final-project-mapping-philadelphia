@@ -68,6 +68,19 @@ html {
     border-radius: 2px;
 }
 
+/* Add hover effect to legend items. I already had this in the neighborhood list so it was easy to figure out how to add it here as well */
+
+.legend-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease, padding-left 0.2s ease;
+}
+
+.legend-item:hover {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    padding-left: 6px;
+}
+
 #page-header {
     position: absolute;
     top: 16px;
